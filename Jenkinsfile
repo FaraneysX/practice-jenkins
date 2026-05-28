@@ -54,13 +54,7 @@ pipeline {
             }
         }
 
-        stage('6. Publish to Maven Local') {
-            steps {
-                sh './gradlew publishToMavenLocal'
-            }
-        }
-
-        stage('7. Build & Archive Artifact') {
+        stage('6. Build & Archive Artifact') {
             steps {
                 sh './gradlew :app:bootJar'
                 sh 'mkdir -p ./release-artifacts'
