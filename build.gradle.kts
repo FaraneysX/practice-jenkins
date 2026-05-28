@@ -1,36 +1,55 @@
 plugins {
     java
-    alias(libs.plugins.springBoot)
-    alias(libs.plugins.dependencyManagement)
-    alias(libs.plugins.lombok)
+    alias(libs.plugins.springBoot) apply false
+    alias(libs.plugins.dependencyManagement) apply false
+    alias(libs.plugins.lombok) apply false
     alias(libs.plugins.versions)
+    alias(libs.plugins.assembly) apply false
 }
 
-group = "ru.denisov"
-version = "1.0.0"
-description = "it-company"
+allprojects {
+    group = "ru.denisov"
+    version = "1.0.0"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+    repositories {
+        mavenCentral()
     }
 }
 
-repositories {
-    mavenCentral()
-}
+subprojects {
+    pluginManager.apply("java")
+    pluginManager.apply("jacoco")
 
-dependencies {
-    implementation(libs.bundles.springBoot)
-    implementation(libs.openapi)
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
 
-    runtimeOnly(libs.postgres)
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        jvmArgs("-XX:+EnableDynamicAgentLoading")
 
-    testImplementation(libs.springBoot.test)
-//    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+        finalizedBy(tasks.named("jacocoTestReport"))
+    }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    jvmArgs("-XX:+EnableDynamicAgentLoading")
+    tasks.named<JacocoReport>("jacocoTestReport") {
+        dependsOn(tasks.test)
+
+        reports {
+            html.required.set(true)
+            csv.required.set(true)
+        }
+    }
+
+    tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+        violationRules {
+            rule {
+                limit {
+                    minimum =
+                        "0.50".toBigDecimal() // Требуем минимум 50% покрытия
+                }
+            }
+        }
+    }
 }

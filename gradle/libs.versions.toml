@@ -4,20 +4,25 @@ dependencyManagement = "1.1.7"
 lombok = "9.5.0"
 openapi = "3.0.3"
 versions = "0.54.0"
+assembly = "9.4.2"
+logging = "1.5.32"
 
 [libraries]
-springBoot = { group = "org.springframework.boot", name = "spring-boot-starter" }
+springBoot-bom = { group = "org.springframework.boot", name = "spring-boot-dependencies", version.ref = "springBoot" }
 springBoot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 springBoot-dataJpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa" }
+springBoot-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 postgres = { group = "org.postgresql", name = "postgresql" }
 openapi = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "openapi" }
+logging = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logging" }
 springBoot-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
 
 [bundles]
-springBoot = ["springBoot", "springBoot-webmvc", "springBoot-dataJpa"]
+springBoot = ["springBoot-webmvc", "springBoot-dataJpa", "springBoot-validation"]
 
 [plugins]
 springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
 dependencyManagement = { id = "io.spring.dependency-management", version.ref = "dependencyManagement" }
 lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
+assembly = { id = "com.gradleup.shadow", version.ref = "assembly" }
