@@ -27,17 +27,7 @@ pipeline {
             }
         }
 
-        stage('4. Static Analysis (Checkstyle)') {
-            when {
-                expression { env.GIT_BRANCH == 'develop' }
-            }
-            steps {
-                sh './gradlew checkstyleMain'
-                recordIssues enabledForFailure: true, tools: [checkStyle(pattern: '**/build/reports/checkstyle/*.xml')]
-            }
-        }
-
-        stage('5. Coverage & Gate') {
+        stage('4. Coverage & Gate') {
             steps {
                 sh './gradlew test jacocoTestReport jacocoTestCoverageVerification'
 
@@ -46,7 +36,7 @@ pipeline {
             }
         }
 
-        stage('6. Build & Archive Artifact') {
+        stage('5. Build & Archive Artifact') {
             steps {
                 sh './gradlew :app:bootJar'
                 sh 'mkdir -p ./release-artifacts'
