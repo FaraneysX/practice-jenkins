@@ -64,8 +64,6 @@ class UserServiceTest {
                 .build();
     }
 
-    // ==================== CREATE ====================
-
     @Test
     void create_ShouldFindProject_SaveAndReturnResponse() {
         Instant newBirthDate = Instant.parse("1995-05-05T00:00:00Z");
@@ -73,7 +71,7 @@ class UserServiceTest {
                 "Petr", "Petrov", "Petrovich",
                 newBirthDate,
                 "petr@example.com", "pass123",
-                projectId // Передаем projectId из DTO
+                projectId
         );
 
         User savedUser = User.builder()
@@ -117,8 +115,6 @@ class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
-    // ==================== GET BY ID ====================
-
     @Test
     void getById_WhenExists_ShouldReturnResponse() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -138,8 +134,6 @@ class UserServiceTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("User not found with id: " + userId);
     }
-
-    // ==================== GET ALL / BY PROJECT ====================
 
     @Test
     void getAll_ShouldReturnListOfResponses() {
@@ -161,8 +155,6 @@ class UserServiceTest {
         assertThat(responses.getFirst().projectId()).isEqualTo(projectId);
         verify(userRepository).getByProjectId(projectId);
     }
-
-    // ==================== UPDATE ====================
 
     @Test
     void updateById_WithFullData_ShouldUpdateAllFields() {
@@ -201,7 +193,7 @@ class UserServiceTest {
         userService.updateById(userId, request);
 
         assertThat(user.getName()).isEqualTo("OnlyName");
-        assertThat(user.getSurname()).isEqualTo("Ivanov"); // Не изменилось
+        assertThat(user.getSurname()).isEqualTo("Ivanov");
         verify(projectRepository, never()).findById(any());
         verify(userRepository).save(any());
     }
@@ -249,8 +241,6 @@ class UserServiceTest {
 
         verify(userRepository, never()).save(any());
     }
-
-    // ==================== DELETE ====================
 
     @Test
     void deleteById_ShouldCallRepositoryAndReturnTrue() {

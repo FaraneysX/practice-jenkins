@@ -14,7 +14,6 @@ import ru.denisov.itcompany.dto.TaskResponse;
 import ru.denisov.itcompany.dto.TaskUpdateRequest;
 import ru.denisov.itcompany.repository.ProjectRepository;
 import ru.denisov.itcompany.repository.TaskRepository;
-import ru.denisov.itcompany.repository.UserRepository;
 
 import java.time.Instant;
 import java.util.List;
@@ -35,8 +34,6 @@ class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
-    @Mock
-    private UserRepository userRepository; // Замокан, так как инжектируется в сервис, но в текущих методах не используется
     @Mock
     private ProjectRepository projectRepository;
 
@@ -64,8 +61,6 @@ class TaskServiceTest {
                 .endedAt(now.plusSeconds(3600))
                 .build();
     }
-
-    // ==================== CREATE ====================
 
     @Test
     void create_ShouldSaveAndReturnResponse() {
@@ -95,8 +90,6 @@ class TaskServiceTest {
         verify(taskRepository, never()).save(any());
     }
 
-    // ==================== GET BY ID ====================
-
     @Test
     void getById_WhenExists_ShouldReturnResponse() {
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
@@ -116,8 +109,6 @@ class TaskServiceTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Task not found with id: " + taskId);
     }
-
-    // ==================== GET ALL / BY PROJECT ====================
 
     @Test
     void getAll_ShouldReturnListOfResponses() {
@@ -139,8 +130,6 @@ class TaskServiceTest {
         assertThat(responses.getFirst().projectId()).isEqualTo(projectId);
         verify(taskRepository).getByProjectId(projectId);
     }
-
-    // ==================== UPDATE (Ключевой блок для покрытия) ====================
 
     @Test
     void updateById_WithFullData_ShouldUpdateAllFields() {
@@ -172,7 +161,6 @@ class TaskServiceTest {
         taskService.updateById(taskId, request);
 
         assertThat(task.getName()).isEqualTo("Only Name");
-        // Проверяем, что проект НЕ запрашивался, так как projectId = null
         verify(projectRepository, never()).findById(any());
         verify(taskRepository).save(any());
     }
@@ -220,8 +208,6 @@ class TaskServiceTest {
 
         verify(taskRepository, never()).save(any());
     }
-
-    // ==================== DELETE ====================
 
     @Test
     void deleteById_ShouldCallRepositoryAndReturnTrue() {

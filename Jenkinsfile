@@ -17,15 +17,12 @@ pipeline {
 
         stage('2. Compile') {
             steps {
-                // Для Windows: bat 'gradlew.bat clean classes testClasses'
-                // Для Linux/Mac:
                 sh './gradlew clean classes testClasses'
             }
         }
 
         stage('3. Unit Tests') {
             when {
-                // ✅ Правильный синтаксис для веток
                 expression { env.GIT_BRANCH ==~ /feature\/.*/ }
             }
             steps {
@@ -39,7 +36,6 @@ pipeline {
             }
             steps {
                 sh './gradlew checkstyleMain'
-                // ✅ Современный способ записи
                 recordIssues enabledForFailure: true, tools: [checkStyle(pattern: '**/build/reports/checkstyle/*.xml')]
             }
         }
@@ -48,7 +44,6 @@ pipeline {
             steps {
                 sh './gradlew test jacocoTestReport jacocoTestCoverageVerification'
 
-                // ✅ Используем современный Coverage Plugin
                 recordCoverage(tools: [[parser: 'JACOCO']],
                     qualityGates: [[threshold: 50, metric: 'LINE', unstable: true]])
             }

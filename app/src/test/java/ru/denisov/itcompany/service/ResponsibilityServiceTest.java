@@ -64,8 +64,6 @@ class ResponsibilityServiceTest {
                 .build();
     }
 
-    // ==================== CREATE ====================
-
     @Test
     void create_ShouldSaveAndReturnResponse() {
         var request = new ResponsibilityCreateRequest(taskId, userId);
@@ -110,8 +108,6 @@ class ResponsibilityServiceTest {
         verify(responsibilityRepository, never()).save(any());
     }
 
-    // ==================== GET BY ID ====================
-
     @Test
     void getById_WhenExists_ShouldReturnResponse() {
         when(responsibilityRepository.findById(responsibilityId)).thenReturn(Optional.of(responsibility));
@@ -132,8 +128,6 @@ class ResponsibilityServiceTest {
                 .hasMessageContaining("Responsibility not found");
     }
 
-    // ==================== GET ALL ====================
-
     @Test
     void getAll_ShouldReturnListOfResponses() {
         var anotherResp = Responsibility.builder()
@@ -149,8 +143,6 @@ class ResponsibilityServiceTest {
         assertThat(responses).hasSize(2);
         verify(responsibilityRepository).findAll();
     }
-
-    // ==================== GET BY TASK / USER ID ====================
 
     @Test
     void getAllByTaskId_ShouldReturnFilteredResponses() {
@@ -173,8 +165,6 @@ class ResponsibilityServiceTest {
         assertThat(responses.getFirst().userId()).isEqualTo(userId);
         verify(responsibilityRepository).getByUserId(userId);
     }
-
-    // ==================== UPDATE ====================
 
     @Test
     void updateById_WithFullData_ShouldUpdateBothFields() {
@@ -200,7 +190,6 @@ class ResponsibilityServiceTest {
 
     @Test
     void updateById_WithPartialData_ShouldUpdateOnlyNonNullFields() {
-        // Обновляем только задачу, user = null
         UUID newTaskId = UUID.randomUUID();
         Task newTask = Task.builder().id(newTaskId).build();
         var request = new ResponsibilityUpdateRequest(newTaskId, null);
@@ -212,22 +201,19 @@ class ResponsibilityServiceTest {
         responsibilityService.updateById(responsibilityId, request);
 
         verify(taskRepository).findById(newTaskId);
-        verify(userRepository, never()).findById(any()); // User не должен запрашиваться
+        verify(userRepository, never()).findById(any());
         verify(responsibilityRepository).save(any());
     }
 
     @Test
     void updateById_WhenResponsibilityNotFound_ShouldThrowException() {
-        // 1. Подготовка данных вне лямбды
         var request = new ResponsibilityUpdateRequest(null, null);
         when(responsibilityRepository.findById(responsibilityId)).thenReturn(Optional.empty());
 
-        // 2. В лямбде остался только один вызов, который мы тестируем
         assertThatThrownBy(() -> responsibilityService.updateById(responsibilityId, request))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Responsibility not found with id: " + responsibilityId);
 
-        // 3. Проверка отсутствующих взаимодействий
         verify(taskRepository, never()).findById(any());
         verify(userRepository, never()).findById(any());
         verify(responsibilityRepository, never()).save(any());
@@ -247,8 +233,6 @@ class ResponsibilityServiceTest {
 
         verify(responsibilityRepository, never()).save(any());
     }
-
-    // ==================== DELETE ====================
 
     @Test
     void deleteById_ShouldCallRepositoryAndReturnTrue() {
