@@ -2,10 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Отключаем демон Gradle в CI, чтобы он не съедал память
         GRADLE_OPTS = '-Dorg.gradle.daemon=false'
-        // Явно указываем JAVA_HOME (если нужно)
-        // JAVA_HOME = tool('JDK_21')
     }
 
     stages {
